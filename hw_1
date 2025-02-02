@@ -1,0 +1,38 @@
+void main() {
+  String fileContent = """
+This is a really really really cool experiment really
+Cute little experiment
+Will it work maybe it will work do you think it will it will
+""";
+  List<String> lines = fileContent.split('\n');
+  List<String> resultsPerLine = [];
+  int globalMaxFrequency = 0;
+  Map<int, List<String>> lineWithGlobalMax = {};
+  for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+    String line = lines[lineNumber];
+    Map<String, int> wordCounts = {};
+    for (String word in line.split(' ')) {
+      word = word.toLowerCase();
+      wordCounts[word] = (wordCounts[word] ?? 0) + 1;
+    }
+    int maxFrequency = wordCounts.values.reduce((a, b) => a > b ? a : b);
+    List<String> highestWords = wordCounts.entries
+        .where((entry) => entry.value == maxFrequency)
+        .map((entry) => entry.key)
+        .toList();
+    resultsPerLine.add('["${highestWords.join('", "')}"] (appears in line ${lineNumber + 1})');
+    if (maxFrequency > globalMaxFrequency) {
+      globalMaxFrequency = maxFrequency;
+      lineWithGlobalMax = {lineNumber + 1: highestWords};
+    } else if (maxFrequency == globalMaxFrequency) {
+      lineWithGlobalMax[lineNumber + 1] = highestWords;
+    }
+  }
+  print("The following words have the highest word frequency per line:");
+  resultsPerLine.forEach(print);
+
+  print("\nThe line(s) whose \"highest frequency words\" have the greatest value:");
+  lineWithGlobalMax.forEach((line, words) {
+    print('["${words.join('", "')}"] (appears in line $line with $globalMaxFrequency occurrences)');
+  });
+}
